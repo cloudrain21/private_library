@@ -1,0 +1,7 @@
+
+Program( 'String_unittest.cpp',
+         LIBS = ['cr', 'gtest_main', 'pthread'],
+         LIBPATH = ['.', '../lib'],
+         CPPPATH = ['../include',
+                    '/Users/dplee/work/googletest-1/googletest/include',
+                    '/Users/dplee/work/googletest-1/googletest/include/gtest/internal'] )

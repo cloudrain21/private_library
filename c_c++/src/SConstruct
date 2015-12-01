@@ -1,0 +1,19 @@
+
+env = Environment( CC = 'g++',
+                   CCFLAGS = '-g -Wall -O0 -std=c++11',
+                   LIBPATH = '../lib',
+                   CPPPATH = '../include' )
+
+#env.Append( CPPPATH = [ '../include' ] )
+
+libcr = env.SharedLibrary( 'cr',
+                         [ 'Time.cpp',
+                           'ClockImpl.cpp',
+                           'Clock.cpp',
+                           'ThreadLocalImpl.cpp',
+                           'ThreadImpl.cpp',
+                           'Thread.cpp',
+                           'String.cpp' ] )
+
+env.Install( '$LIBPATH', libcr )
+env.Alias( 'install', '$LIBPATH' )
