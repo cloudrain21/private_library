@@ -1,6 +1,7 @@
 
 Program( 'String_unittest.cpp',
-         LIBS = ['cr', 'gtest_main', 'pthread'],
+         LIBS    = ['cr', 'gtest_main', 'pthread'],
+         CCFLAGS = '-g -Wall -O0 -std=c++11',
          LIBPATH = ['.', '../lib'],
          CPPPATH = ['../include',
                     '/Users/dplee/work/googletest-1/googletest/include',
