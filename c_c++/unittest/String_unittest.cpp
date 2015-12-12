@@ -447,4 +447,86 @@ TEST(StringTest, insert)
 
     EXPECT_TRUE( s.getSize() == s1.getSize() );
     EXPECT_STREQ( s.toAnsiString().c_str(), s1.toAnsiString().c_str() );
+
+    s = "This is a test string.";
+    s1 = L"This is";     /**< wide character */
+    s2 = " a test string.";
+
+    s1.insert( s1.getSize(), s2 );
+
+    EXPECT_TRUE( s.getSize() == s1.getSize() );
+    EXPECT_STREQ( s.toAnsiString().c_str(), s1.toAnsiString().c_str() );
+
+    s = "This is a test string.";
+    s1 = L"This is";         /**< wide character */
+    s2 = L" a test string."; /**< wide character */
+
+    s2.insert( 0, s1 );
+
+    EXPECT_TRUE( s.getSize() == s2.getSize() );
+    EXPECT_STREQ( s.toAnsiString().c_str(), s2.toAnsiString().c_str() );
+}
+
+/**
+ * find
+ */
+TEST(StringTest, find)
+{
+    std::string s1 = "This is a test string !@#$%^&*().";
+    cr::String  s2 = "This is a test string !@#$%^&*().";
+    cr::String  find_str = "test";
+
+    std::size_t pos1 = s1.find( find_str, 0 );
+    std::size_t pos2 = s2.find( "test", 0 );
+
+    EXPECT_EQ( pos1, pos2 );
+
+    pos1 = s1.find( find_str, 4 );
+    pos2 = s2.find( "test", 4 );
+
+    EXPECT_EQ( pos1, pos2 );
+
+    pos1 = s1.find( find_str );
+    pos2 = s2.find( "test" );
+
+    EXPECT_EQ( pos1, pos2 );
+}
+
+/**
+ * replace a substring with another string
+ */
+TEST(StringTest, replace1)
+{
+    cr::String  s = "This is a test string !@#$%^&*().";
+    cr::String  rr = "This is a replace string !@#$%^&*().";
+    cr::String  r = "replace";
+    cr::String  f;
+
+    s.replace( 0, cr::String::InvalidPos, r );
+
+    EXPECT_STREQ( s.toAnsiString().c_str(), r.toAnsiString().c_str() );
+
+    s = "This is a test string !@#$%^&*().";
+    r = "replace";
+
+    s.replace( 10, 4, r );
+
+    EXPECT_STREQ( s.toAnsiString().c_str(), rr.toAnsiString().c_str() );
+
+    s = "This is a test string !@#$%^&*().";
+    f = "test";
+    r = "replace";
+
+    std::size_t pos = s.find(f);
+
+    s.replace( pos, 4, r );
+
+    EXPECT_STREQ( s.toAnsiString().c_str(), rr.toAnsiString().c_str() );
+}
+
+/**
+ * replace all occurrences of a substring with a replacement string
+ */
+TEST(StringTest, replace2)
+{
 }
