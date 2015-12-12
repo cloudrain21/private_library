@@ -201,6 +201,11 @@ namespace cr
         return m_string.size();
     }
 
+    std::size_t String::size() const
+    {
+        return m_string.size();
+    }
+
     bool String::isEmpty() const
     {
         return m_string.empty();
@@ -209,6 +214,16 @@ namespace cr
     void String::erase(std::size_t position, std::size_t count)
     {
         m_string.erase(position, count);
+    }
+
+    void String::erase(ConstIterator start, ConstIterator end)
+    {
+        m_string.erase(start, end);
+    }
+
+    void String::erase(ConstIterator it)
+    {
+        m_string.erase(it);
     }
 
     void String::insert(std::size_t position, const String& str)

@@ -3,6 +3,9 @@
 #include <gtest/gtest.h>
 #include <cstring>
 
+#include <iostream>
+#include <exception>
+
 
 /**
  * Default constructor
@@ -208,24 +211,19 @@ TEST(StringTest, toWideString)
  */
 TEST(StringTest, toUtf16)
 {
-    const std::string org_str = "This is a test string !@#$%^&*().";
-    std::basic_string<cr::Uint16> str16;
-    std::basic_string<cr::Uint32> str32;
+    const std::string org_str("This is a test string !@#$%^&*().");
+    cr::String s(org_str);
 
-    cr::Utf32::toUtf16( org_str.begin(),
-                        org_str.end(),
-                        str16.begin() );
+    std::basic_string<cr::Uint16> str1;
+    str1 = s.toUtf16();
 
-    cr::Utf16::toUtf32( str16.begin(),
-                        str16.end(),
-                        str32.begin() );
+    std::basic_string<cr::Uint16> str2;
+    str2.reserve( s.getSize() );
+    cr::Utf16::fromAnsi( org_str.begin(),
+                         org_str.end(),
+                         std::back_inserter(str2) );
 
-    cr::String s(str32);
-
-    //std::cout << str32 << std::endl;
-
-    //EXPECT_TRUE( str16 == s.toUtf16() );
-    EXPECT_STREQ( org_str.c_str(), s.toAnsiString().c_str() );
+    EXPECT_TRUE( !memcmp( str1.c_str(), str2.c_str(), s.getSize() * 2 ) );
 }
 
 /**
@@ -233,8 +231,220 @@ TEST(StringTest, toUtf16)
  */
 TEST(StringTest, toUtf32)
 {
-    cr::String s1("This is a test string !@#$%^&*().");
-    cr::String s2("This is a test string !@#$%^&*().");
+    const std::string org_str("This is a test string !@#$%^&*().");
+    cr::String s(org_str);
 
-    EXPECT_TRUE( s1.toUtf32() == s2.toUtf32() );
+    std::basic_string<cr::Uint32> str1;
+    str1 = s.toUtf32();
+
+    std::basic_string<cr::Uint32> str2;
+    str2.reserve( s.getSize() );
+    cr::Utf32::fromAnsi( org_str.begin(),
+                         org_str.end(),
+                         std::back_inserter(str2) );
+
+    EXPECT_TRUE( !memcmp( str1.c_str(), str2.c_str(), s.getSize() * 2 ) );
+}
+
+/**
+ * operator equal(=) : assign operator
+ */
+TEST(StringTest, assignOperator)
+{
+    cr::String s1("This is a test string !@#$%^&*().");
+    cr::String s2;
+
+    s2 = s1;
+
+    EXPECT_STREQ( s1.toAnsiString().c_str(), s2.toAnsiString().c_str() );
+}
+
+/**
+ * operator plus equal(+=) : plus assign operator
+ */
+TEST(StringTest, plusAssignOperator)
+{
+    cr::String org("This is a test string !@#$%^&*().");
+    cr::String s1("This is a test");
+    cr::String s2(" string !@#$%^&*().");
+
+    s1 += s2;
+
+    EXPECT_STREQ( org.toAnsiString().c_str(), s1.toAnsiString().c_str() );
+}
+
+/**
+ * operator [] const
+ */
+TEST(StringTest, indexConstOperator)
+{
+    const std::string s1 = "This is a test string !@#$%^&*().";
+    const cr::String  s2 = "This is a test string !@#$%^&*().";
+
+    for(int i=0; i<s2.getSize(); ++i)
+    {
+        EXPECT_TRUE( cr::Utf32::decodeAnsi(s1[i]) == s2[i] );
+    }
+}
+
+/**
+ * operator [] 
+ */
+TEST(StringTest, indexOperator)
+{
+    std::string s1 = "This is a test string !@#$%^&*().";
+    cr::String  s2 = "This is a test string !@#$%^&*().";
+
+    for(int i=0; i<s2.getSize(); ++i)
+    {
+        EXPECT_TRUE( cr::Utf32::decodeAnsi(s1[i]) == s2[i] );
+    }
+}
+
+/**
+ * clear
+ */
+TEST(StringTest, clear)
+{
+    std::string s1 = "This is a test string !@#$%^&*().";
+    cr::String  s2 = "This is a test string !@#$%^&*().";
+
+    EXPECT_EQ( s1.size(), s2.getSize() );
+
+    s2.clear();
+
+    EXPECT_EQ( 0, s2.getSize() );
+}
+
+/**
+ * getSize, size
+ */
+TEST(StringTest, getSize)
+{
+    std::string s1 = "This is a test string !@#$%^&*().";
+    cr::String  s2 = "This is a test string !@#$%^&*().";
+
+    EXPECT_EQ( s1.size(), s2.getSize() );
+    EXPECT_EQ( s1.size(), s2.getSize() );
+
+    s2.clear();
+
+    EXPECT_EQ( 0, s2.getSize() );
+    EXPECT_EQ( 0, s2.size() );
+}
+
+/**
+ * isEmpty
+ */
+TEST(StringTest, isEmpty)
+{
+    cr::String  s1 = "This is a test string !@#$%^&*().";
+    cr::String  s2;
+
+    EXPECT_TRUE( ! s1.isEmpty() );
+
+    s1.clear();
+
+    EXPECT_TRUE( s1.isEmpty() );
+    EXPECT_TRUE( s2.isEmpty() );
+}
+
+/**
+ * erase
+ */
+TEST(StringTest, erase)
+{
+    std::string s1 = "This is a test string !@#$%^&*().";
+    cr::String  s2 = "This is a test string !@#$%^&*().";
+
+    s1.erase(0,4);
+    s2.erase(0,4);
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.erase(3);
+    s2.erase(3);
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.erase(0,100);
+    s2.erase(0,100);
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.clear();
+    s2.clear();
+
+    s1 = "This is a test string !@#$%^&*().";
+    s2 = "This is a test string !@#$%^&*().";
+
+    s1.erase(4,7);
+    s2.erase(4,7);
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.erase(5,100);
+    s2.erase(5,100);
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.clear();
+    s2.clear();
+
+    s1 = "This is a test string !@#$%^&*().";
+    s2 = "This is a test string !@#$%^&*().";
+
+    s1.erase(s1.begin(), s1.begin()+5);
+    s2.erase(s2.begin(), s2.begin()+5);
+
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.clear();
+    s2.clear();
+
+    s1 = "This is a test string !@#$%^&*().";
+    s2 = "This is a test string !@#$%^&*().";
+
+    s1.erase(s1.begin());
+    s2.erase(s2.begin());
+
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+
+    s1.erase(s1.begin(), s1.end());
+    s2.erase(s2.begin(), s2.end());
+
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+    EXPECT_TRUE( 0 == s1.size() );
+    EXPECT_TRUE( 0 == s2.size() );
+
+    s1.clear();
+    s2.clear();
+
+    s1 = "This is a test string !@#$%^&*().";
+    s2 = "This is a test string !@#$%^&*().";
+
+    /**< erase special characters */
+    s1.erase(s1.end()-12, s1.end());
+    s2.erase(s2.end()-12, s2.end());
+
+    EXPECT_STREQ( s1.c_str(), s2.toAnsiString().c_str() );
+}
+
+/**
+ * insert
+ */
+TEST(StringTest, insert)
+{
+    cr::String  s = "This is a test string !@#$%^&*().";
+    cr::String  s1 = "This is !@#$%^&*().";
+    cr::String  s2 = "a test string ";
+
+    s1.insert(8, s2);
+
+    EXPECT_TRUE( s.getSize() == s1.getSize() );
+    EXPECT_STREQ( s.toAnsiString().c_str(), s1.toAnsiString().c_str() );
+
+    s = "This is a test string.";
+    s1 = "This is";
+    s2 = " a test string.";
+
+    s1.insert( s1.getSize(), s2 );
+
+    EXPECT_TRUE( s.getSize() == s1.getSize() );
+    EXPECT_STREQ( s.toAnsiString().c_str(), s1.toAnsiString().c_str() );
 }

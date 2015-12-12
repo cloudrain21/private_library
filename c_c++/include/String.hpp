@@ -312,6 +312,15 @@ public:
     std::size_t getSize() const;
 
     /**
+     * \brief Get the size of the string
+     *
+     * \return Number of characters in the string
+     *
+     * \see isEmpty
+     */
+    std::size_t size() const;
+
+    /**
      * \brief Check whether the string is empty or not
      *
      * \return True if the string is empty (i.e. contains no character)
@@ -326,10 +335,30 @@ public:
      * This function removes a sequence of \a count characters
      * starting from \a position.
      *
-     * \param position Position of the first character to erase
+     * \param position Position of the character to erase
      * \param count    Number of characters to erase
      */
-    void erase(std::size_t position, std::size_t count = 1);
+    void erase(std::size_t position=0, std::size_t count = std::string::npos);
+
+    /**
+     * \brief Erase characters from start ~ end iterator
+     *
+     * This function removes a sequence of characters
+     * from start to end iterators.
+     *
+     * \param start ConstIterator position of the starting character to erase
+     * \param end   ConstIterator position of the ending character to erase
+     */
+    void erase(ConstIterator start, ConstIterator end);
+
+    /**
+     * \brief Erase character pointed by iterator
+     *
+     * This function removes a character pointed by iterator.
+     *
+     * \param it ConstIterator position of the character to erase
+     */
+    void erase(ConstIterator it);
 
     /**
      * \brief Insert one or more characters into the string
