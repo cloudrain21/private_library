@@ -2,6 +2,7 @@
 #include <Utf.hpp>
 #include <iterator>
 #include <cstring>
+#include <iostream>
 
 namespace cr
 {

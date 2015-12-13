@@ -2,9 +2,9 @@
 #include <Utf.hpp>
 #include <gtest/gtest.h>
 #include <cstring>
+#include <cwchar>
 
 #include <iostream>
-#include <exception>
 
 
 /**
@@ -529,4 +529,284 @@ TEST(StringTest, replace1)
  */
 TEST(StringTest, replace2)
 {
+    cr::String s = "This and That and This or There, !@#$%^&*(). This is nice. This";
+    cr::String r = "XXXX and That and XXXX or There, !@#$%^&*(). XXXX is nice. XXXX";
+    cr::String search = "This";
+    cr::String replace = "XXXX";
+
+    s.replace( search, replace );
+
+    EXPECT_STREQ( s.toAnsiString().c_str(), r.toAnsiString().c_str() );
+
+    s.replace( "XXXX", "This" );
+    r.replace( "XXXX", "TTTT" );
+    r.replace( "TTTT", search );
+
+    EXPECT_STREQ( s.toAnsiString().c_str(), r.toAnsiString().c_str() );
+}
+
+/**
+ * return a port of the string
+ */
+TEST(StringTest, substring)
+{
+    cr::String s = "This is a test string !@#$%^&*().";
+
+    cr::String ss = s.substring(0);  /**< all string */
+    EXPECT_STREQ( s.toAnsiString().c_str(), ss.toAnsiString().c_str() );
+
+    ss = s.substring(0, cr::String::InvalidPos);  /**< all string */
+    EXPECT_STREQ( s.toAnsiString().c_str(), ss.toAnsiString().c_str() );
+
+    ss = s.substring(0, 1000);  /**< all string */
+    EXPECT_STREQ( s.toAnsiString().c_str(), ss.toAnsiString().c_str() );
+
+    ss = s.substring(0, 1000);  /**< all string */
+    EXPECT_STREQ( s.toAnsiString().c_str(), ss.toAnsiString().c_str() );
+
+    ss = s.substring(0, 4);
+    EXPECT_STREQ( "This", ss.toAnsiString().c_str() );
+
+    ss = s.substring(5, 2);
+    EXPECT_STREQ( "is", ss.toAnsiString().c_str() );
+
+    ss = s.substring(s.size()-3);
+    EXPECT_STREQ( "().", ss.toAnsiString().c_str() );
+
+    ss = s.substring(s.size()-3, cr::String::InvalidPos);
+    EXPECT_STREQ( "().", ss.toAnsiString().c_str() );
+}
+
+/**
+ * get a pointer to the C-style array of characters
+ */
+TEST(StringTest, getData)
+{
+    cr::String s = "This is a test string !@#$%^&*().";
+    std::wstring ws = L"This is a test string !@#$%^&*().";
+
+    cr::String s1(s.getData());
+    cr::String s2(ws);
+
+    EXPECT_STREQ( s1.toAnsiString().c_str(), s2.toAnsiString().c_str() );
+
+    wchar_t w[] = L"This is a test string !@#$%^&*().";
+    cr::String s3(w);
+
+    EXPECT_TRUE( !memcmp(s2.getData(), s3.getData(), s.size()) );
+}
+
+/**
+ * iterator
+ */
+TEST(StringTest, beginEndIterator)
+{
+    cr::String s1 = "This is a test string !@#$%^&*().";
+    cr::String s1_1 = "T";
+
+    EXPECT_TRUE( *s1.begin() == *s1_1.begin() );
+
+    cr::String s2 = "This is a test string !@#$%^&*().";
+    cr::String s2_1 = ".";
+    cr::String s2_2 = "This is a test string !@#$%^&*()C";
+
+    EXPECT_TRUE( *(s2.end()-1) == *(s2_1.end()-1) );
+
+    *s1.begin() = L'C';
+    *s1_1.begin() = L'C';
+
+    EXPECT_TRUE( *s1.begin() == *s1_1.begin() );
+
+    *(s2.end()-1) = L'C';
+    EXPECT_STREQ( s2.toAnsiString().c_str(), s2_2.toAnsiString().c_str() );
+}
+
+
+/**
+ * double equal operator
+ */
+TEST(StringTest, doubleEqual)
+{
+    cr::String s1 = "This is a test string !@#$%^&*().";
+    cr::String s2 = "This is a test string !@#$%^&*().";
+    cr::String s3 = "test string !@#$%^&*().";
+
+    EXPECT_TRUE( s1 == s2 );
+    EXPECT_TRUE( ! (s1 == s3) );
+}
+
+/**
+ * not equal operator
+ */
+TEST(StringTest, notEqual)
+{
+    cr::String s1 = "This is a test string !@#$%^&*().";
+    cr::String s2 = "This is a test string !@#$%^&*().";
+    cr::String s3 = "test string !@#$%^&*().";
+
+    EXPECT_TRUE( s1 != s3 );
+    EXPECT_TRUE( ! (s1 != s2) );
+}
+
+/**
+ * less than operator
+ */
+TEST(StringTest, lessThan)
+{
+    cr::String s1 = "A";
+    cr::String s2 = "B";
+
+    EXPECT_TRUE( s1 < s2 );
+
+    s1 = "a";
+    s2 = "B";
+
+    EXPECT_TRUE( s2 < s1 );
+
+    s1 = "9";
+    s2 = "B";
+
+    EXPECT_TRUE( s1 < s2 );
+
+    s1 = "0";
+    s2 = "1";
+
+    EXPECT_TRUE( s1 < s2 );
+
+    s1 = "10";
+    s2 = "2";
+
+    EXPECT_TRUE( s1 < s2 );
+}
+
+/**
+ * greater than operator
+ */
+TEST(StringTest, greaterThan)
+{
+    cr::String s1 = "A";
+    cr::String s2 = "B";
+
+    EXPECT_FALSE( s1 > s2 );
+
+    s1 = "a";
+    s2 = "B";
+
+    EXPECT_FALSE( s2 > s1 );
+
+    s1 = "9";
+    s2 = "B";
+
+    EXPECT_FALSE( s1 > s2 );
+
+    s1 = "0";
+    s2 = "1";
+
+    EXPECT_FALSE( s1 > s2 );
+
+    s1 = "10";
+    s2 = "2";
+
+    EXPECT_FALSE( s1 > s2 );
+}
+
+/**
+ * less equal than operator
+ */
+TEST(StringTest, lessEqualThan)
+{
+    cr::String s1 = "A";
+    cr::String s2 = "B";
+
+    EXPECT_TRUE( s1 <= s2 );
+
+    s1 = "a";
+    s2 = "B";
+
+    EXPECT_TRUE( s2 <= s1 );
+
+    s1 = "9";
+    s2 = "B";
+
+    EXPECT_TRUE( s1 <= s2 );
+
+    s1 = "0";
+    s2 = "1";
+
+    EXPECT_TRUE( s1 <= s2 );
+
+    s1 = "10";
+    s2 = "2";
+
+    EXPECT_TRUE( s1 <= s2 );
+
+    s1 = "10";
+    s2 = "10";
+
+    EXPECT_TRUE( s1 <= s2 );
+
+    s1 = "B";
+    s2 = "B";
+
+    EXPECT_TRUE( s2 <= s1 );
+}
+
+/**
+ * greater equal than operator
+ */
+TEST(StringTest, greaterEqualThan)
+{
+    cr::String s1 = "A";
+    cr::String s2 = "B";
+
+    EXPECT_FALSE( s1 >= s2 );
+
+    s1 = "a";
+    s2 = "B";
+
+    EXPECT_FALSE( s2 >= s1 );
+
+    s1 = "9";
+    s2 = "B";
+
+    EXPECT_FALSE( s1 >= s2 );
+
+    s1 = "0";
+    s2 = "1";
+
+    EXPECT_FALSE( s1 >= s2 );
+
+    s1 = "10";
+    s2 = "2";
+
+    EXPECT_FALSE( s1 >= s2 );
+
+    s1 = "10";
+    s2 = "10";
+
+    EXPECT_TRUE( s1 >= s2 );
+
+    s1 = "B";
+    s2 = "B";
+
+    EXPECT_TRUE( s2 >= s1 );
+}
+
+/**
+ * plus operator
+ */
+TEST(StringTest, onePlus)
+{
+    cr::String s  = "This is a test string !@#$%^&*().";
+    cr::String s1 = "This is a ";
+    cr::String s2 = "test string !@#$%^&*().";
+
+    cr::String s3 = s1 + s2;
+
+    EXPECT_STREQ( s.toAnsiString().c_str(), s3.toAnsiString().c_str() );
+
+    std::string ss = s2.toAnsiString();
+
+    s3 = s1 + ss;
+    EXPECT_STREQ( s.toAnsiString().c_str(), s3.toAnsiString().c_str() );
 }
