@@ -114,6 +114,11 @@ namespace cr
         return right * left;
     }
 
+    Time operator * (Int64 left, Time right)
+    {
+        return right * left;
+    }
+
     Time& operator *= (Time& left, float right)
     {
         return left = left * right;
