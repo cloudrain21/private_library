@@ -1,8 +1,11 @@
 
-Program( 'String_unittest.cpp',
-         LIBS    = ['cr', 'gtest_main', 'pthread'],
-         CCFLAGS = '-g -Wall -O0 -std=c++11',
-         LIBPATH = ['.', '../lib'],
-         CPPPATH = ['../include',
-                    '/Users/dplee/work/googletest-1/googletest/include',
-                    '/Users/dplee/work/googletest-1/googletest/include/gtest/internal'] )
+env = Environment( CC = 'g++',
+                   LIBS    = ['cr', 'gtest_main', 'pthread'],
+                   CCFLAGS = '-g -Wall -O0 -std=c++11',
+                   LIBPATH = ['.', '../lib'],
+                   CPPPATH = ['../include',
+                              '/Users/dplee/work/googletest-1/googletest/include',
+                              '/Users/dplee/work/googletest-1/googletest/include/gtest/internal'] )
+
+env.Program( 'String_unittest.cpp' );
+env.Program( 'Time_unittest.cpp' );
