@@ -1,8 +1,8 @@
 .PHONY: all clean install
 default: all
 all:    
-	scons
+	/usr/local/bin/scons
 clean:
-	scons -c
+	/usr/local/bin/scons -c
 install:
-	scons install
+	/usr/local/bin/scons install
